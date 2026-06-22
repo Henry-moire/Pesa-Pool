@@ -39,7 +39,18 @@ function createWindow() {
     win.loadFile('index.html');
 }
 
-console.log(createEvent('Test Event', '2026-06-20'));
+function listEvents() {
+    const dir = getDataDir();
+    const events = fs.readdirSync(dir)
+        .filter(file => file.endsWith('.json'))
+        .map(filename => {
+            const fullPath = path.join(dir, filename);
+            const content = fs.readFileSync(fullPath, 'utf8');
+            const event = JSON.parse(content);
+            return { id: event.id, name: event.name, date: event.date };
+        });
+    return events;
+}
 
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => {
