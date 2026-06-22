@@ -52,6 +52,23 @@ function listEvents() {
     return events;
 }
 
+function loadEvent(id) {
+    const filePath = path.join(getDataDir(), `${id}.json`);
+    if (!fs.existsSync(filePath)) {
+        throw new Error(`Event file not found: ${id}`);
+    }
+    const content = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(content);
+}
+
+function saveEvent(event) {
+    const filePath = path.join(getDataDir(), `${event.id}.json`);
+    if (!fs.existsSync(filePath)) {
+        throw new Error(`Event file not found: ${event.id}`);
+    }
+    fs.writeFileSync(filePath, JSON.stringify(event, null, 2));
+}
+
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => {
     if (process.platform != 'darwin') {
