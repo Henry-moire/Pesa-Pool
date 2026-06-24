@@ -1,6 +1,7 @@
 const { app, BrowserWindow} = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { randomUUID } = require('crypto');
 
 function getDataDir() {
     const dir = path.join(app.getPath('documents'), 'Pesa Pool');
@@ -67,6 +68,31 @@ function saveEvent(event) {
         throw new Error(`Event file not found: ${event.id}`);
     }
     fs.writeFileSync(filePath, JSON.stringify(event, null, 2));
+}
+
+function addDonation(eventId, donorName, amount) {
+    const event = loadEvent(eventId);
+
+    let donor = event.donors.find(donor => donor.name.toLowerCase() === donorName.toLowerCase());
+    
+    if (!donor) {
+        donor = {
+            id: 'don_' + randomUUID(),
+            name: donorName
+        };
+        event.donors.push(donor);
+    }
+
+    const donation = {
+        id: 'd_' + randomUUID(),
+        donorId: donor.id,
+        amount: amount,
+        timestamp: new Date().toISOString()
+    };
+
+    event.donations.push(donation);
+    saveEvent(event);
+    return event;
 }
 
 app.whenReady().then(createWindow);
