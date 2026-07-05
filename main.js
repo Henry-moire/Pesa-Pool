@@ -1,7 +1,7 @@
-const { app, BrowserWindow} = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { randomUUID } = require('crypto');
+const { app, BrowserWindow, ipcMain } = require('electron');
 
 function getDataDir() {
     const dir = path.join(app.getPath('documents'), 'Pesa Pool');
@@ -72,9 +72,7 @@ function saveEvent(event) {
 
 function addDonation(eventId, donorName, amount) {
     const event = loadEvent(eventId);
-
     let donor = event.donors.find(donor => donor.name.toLowerCase() === donorName.toLowerCase());
-    
     if (!donor) {
         donor = {
             id: 'don_' + randomUUID(),
@@ -82,19 +80,32 @@ function addDonation(eventId, donorName, amount) {
         };
         event.donors.push(donor);
     }
-
     const donation = {
         id: 'd_' + randomUUID(),
         donorId: donor.id,
         amount: amount,
         timestamp: new Date().toISOString()
     };
-
     event.donations.push(donation);
     saveEvent(event);
     return event;
 }
 
+ipcMain.handle('create-event', (_e, name, date) => {
+    return createEvent(name, date);
+});
+ipcMain.handle('list-events', (_e) => {
+    return listEvents();
+});
+ipcMain.handle('load-event', (_e, id) => {
+    return loadEvent(id);
+});
+ipcMain.handle('save-event', (_e, eventData) => {
+    return saveEvent(eventData);
+});
+ipcMain.handle('add-donation', (_e, eventId, donorName, amount) => {
+    return addDonation(eventId, donorName, amount);
+});
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => {
     if (process.platform != 'darwin') {
