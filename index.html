@@ -2,7 +2,9 @@
 <html>
 <head>
   <title>Pesa Pool</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'">
+  <link rel="stylesheet" href="renderer.css">
+  <script src="renderer.js" defer></script>
 </head>
 <body>
   <div id="app">
@@ -16,7 +18,7 @@
       <div id="view-empty">
         <p>Select an event or create a new one.</p>
       </div>
-      <div id="view-event" style="display:none">
+      <div id="view-event">
         <h1 id="event-name"></h1>
         <p id="event-total"></p>
         <form id="form-add-donation">
