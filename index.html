@@ -5,6 +5,38 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
 </head>
 <body>
-  <h1>Pesa Pool</h1>
+  <div id="app">
+
+    <aside id="sidebar">
+      <button id="btn-new-event">+ New Event</button>
+      <ul id="event-list"></ul>
+    </aside>
+
+    <main id="main">
+      <div id="view-empty">
+        <p>Select an event or create a new one.</p>
+      </div>
+      <div id="view-event" style="display:none">
+        <h1 id="event-name"></h1>
+        <p id="event-total"></p>
+        <form id="form-add-donation">
+          <input type="text" id="inp-donor" placeholder="Donor name" />
+          <input type="number" id="inp-amount" placeholder="Amount (KES)" />
+          <button type="submit">Add Donation</button>
+        </form>
+        <table id="donations-table">
+          <thead>
+            <tr>
+              <th>Donor</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="donations-body"></tbody>
+        </table>
+      </div>
+    </main>
+
+  </div>
 </body>
 </html>
