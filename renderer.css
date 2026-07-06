@@ -1,3 +1,32 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+#app {
+    display: flex;
+    height: 100%;
+}
+
+#sidebar {
+    width: 250px;
+    height: 100%;
+    flex-shrink: 0;
+    overflow-y: auto;
+}
+
+#main {
+    flex: 1;
+    height: 100%;
+    overflow-y: auto;
+}
+
 #view-event {
   display: none;
 }
@@ -8,4 +37,316 @@
 
 #modal-edit-donation {
     display: none;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #1a1a1a;
+    background-color: #f0f0f0;
+}
+
+#sidebar {
+    background-color: #ffffff;
+    border-right: 2px solid #cccccc;
+    padding: 16px;
+}
+
+#main {
+    padding: 32px;
+    background-color: #f0f0f0;
+}
+
+#btn-new-event {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #2e7d32;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 16px;
+}
+
+#btn-new-event:hover {
+    background-color: #1b5e20;
+}
+
+#event-list {
+    list-style: none;
+}
+
+#event-list li {
+    padding: 12px;
+    margin-bottom: 8px;
+    background-color: #f0f0f0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#event-list li:hover {
+    background-color: #e0e0e0;
+}
+
+#view-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 20px;
+    color: #666666;
+}
+
+#event-name {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+}
+
+#event-total {
+    font-size: 22px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin-bottom: 24px;
+}
+
+#export-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+#export-buttons button {
+    padding: 10px 18px;
+    font-size: 15px;
+    border: 2px solid #2e7d32;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #2e7d32;
+    cursor: pointer;
+}
+
+#export-buttons button:hover {
+    background-color: #2e7d32;
+    color: #ffffff;
+}
+
+#form-add-donation {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #cccccc;
+}
+
+#form-add-donation label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #444444;
+}
+
+#form-add-donation input {
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 2px solid #cccccc;
+    border-radius: 6px;
+    width: 100%;
+}
+
+#form-add-donation input:focus {
+    outline: none;
+    border-color: #2e7d32;
+}
+
+#form-add-donation button {
+    padding: 10px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #2e7d32;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#form-add-donation button:hover {
+    background-color: #1b5e20;
+}
+
+#donations-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #cccccc;
+}
+
+#donations-table th {
+    background-color: #2e7d32;
+    color: #ffffff;
+    padding: 14px 16px;
+    font-size: 16px;
+    text-align: left;
+}
+
+#donations-table td {
+    padding: 12px 16px;
+    font-size: 16px;
+    border-bottom: 1px solid #eeeeee;
+    color: #1a1a1a;
+}
+
+#donations-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+#donations-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.btn-delete {
+    padding: 6px 14px;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #c62828;
+    border: 2px solid #c62828;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background-color: #c62828;
+    color: #ffffff;
+}
+
+.btn-edit {
+    padding: 6px 14px;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #1565c0;
+    border: 2px solid #1565c0;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+.btn-edit:hover {
+    background-color: #1565c0;
+    color: #ffffff;
+}
+
+#sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-size: 16px;
+}
+
+#sort-select {
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 2px solid #cccccc;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#modal-new-event,
+#modal-edit-donation {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+#modal-content,
+#modal-edit-content {
+    background-color: #ffffff;
+    padding: 32px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+}
+
+#modal-content h2,
+#modal-edit-content h2 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+}
+
+#modal-content label,
+#modal-edit-content label {
+    display: block;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #444444;
+}
+
+#modal-content input,
+#modal-edit-content input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 2px solid #cccccc;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+#modal-content input:focus,
+#modal-edit-content input:focus {
+    outline: none;
+    border-color: #2e7d32;
+}
+
+#modal-confirm,
+#edit-confirm {
+    padding: 10px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #2e7d32;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+#modal-confirm:hover,
+#edit-confirm:hover {
+    background-color: #1b5e20;
+}
+
+#modal-cancel,
+#edit-cancel {
+    padding: 10px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #ffffff;
+    color: #c62828;
+    border: 2px solid #c62828;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#modal-cancel:hover,
+#edit-cancel:hover {
+    background-color: #c62828;
+    color: #ffffff;
 }

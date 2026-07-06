@@ -5,19 +5,7 @@ let editingDonationId = null;
 function renderDonations() {
     const tbody = document.getElementById('donations-body');
     tbody.innerHTML = '';
-    let sorted;
-
-    if (currentSort === "name") {
-      sorted = [...currentEvent.donations].sort((a, b) => {
-        const nameA = currentEvent.donors.find(d => d.id === a.donorId).name;
-        const nameB = currentEvent.donors.find(d => d.id === b.donorId).name;
-        return nameA.localeCompare(nameB);
-      });
-    } else if (currentSort === 'amount') {
-      sorted = [...currentEvent.donations].sort((a, b) => b.amount - a.amount);
-    } else {
-      sorted = [...currentEvent.donations].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    }
+    const sorted = getSortedDonations();
 
     sorted.forEach(donation => {
         const donor = currentEvent.donors.find(d => d.id === donation.donorId);
@@ -31,17 +19,19 @@ function renderDonations() {
         const tdTimestamp = document.createElement('td');
         tdTimestamp.textContent = donation.timestamp;
         tr.appendChild(tdTimestamp);
-        tbody.appendChild(tr);
         const tdActions = document.createElement('td');
         const btnDelete = document.createElement('button');
+        btnDelete.className = 'btn-delete';
         btnDelete.textContent = 'Delete';
         btnDelete.addEventListener('click', () => deleteDonation(donation.id));
         tdActions.appendChild(btnDelete);
         tr.appendChild(tdActions);
         const btnEdit = document.createElement('button');
+        btnEdit.className = 'btn-edit';
         btnEdit.textContent = 'Edit';
         btnEdit.addEventListener('click', () => openEditModal(donation.id));
         tdActions.appendChild(btnEdit);
+        tbody.appendChild(tr);
     });
 }
 
@@ -51,7 +41,7 @@ async function openEditModal(donationId) {
     editingDonationId = donationId;
     document.getElementById('edit-donor-name').value = donName;
     document.getElementById('edit-amount').value = donation.amount;
-    document.getElementById('modal-edit-donation').style.display = 'block';
+    document.getElementById('modal-edit-donation').style.display = 'flex';
 }
 
 async function deleteDonation(donationId) {
@@ -103,12 +93,13 @@ document.getElementById('form-add-donation').addEventListener('submit', async (e
         await window.api.addDonation(currentEvent.id, donorName, amount);
         document.getElementById('form-add-donation').reset();
         currentEvent = await window.api.loadEvent(currentEvent.id);
+        updateTotal();
         renderDonations();
     }
 });
 
 document.getElementById('btn-new-event').addEventListener('click', () => {
-    document.getElementById('modal-new-event').style.display = 'block';
+    document.getElementById('modal-new-event').style.display = 'flex';
 });
 
 document.getElementById('modal-cancel').addEventListener('click', () => {
@@ -158,17 +149,17 @@ document.getElementById('edit-confirm').addEventListener('click', async () => {
 });
 
 document.getElementById('export-json').addEventListener('click', async () => {
-    const result = await window.api.exportAs('json', currentEvent);
+    const result = await window.api.exportAs('json', getSortedEventForExport());
     if (result.success) alert(`Saved to ${result.filePath}`);
 });
 
 document.getElementById('export-csv').addEventListener('click', async () => {
-    const result = await window.api.exportAs('csv', currentEvent);
+    const result = await window.api.exportAs('csv', getSortedEventForExport());
     if (result.success) alert(`Saved to ${result.filePath}`);
 });
 
 document.getElementById('export-excel').addEventListener('click', async () => {
-    const result = await window.api.exportAs('excel', currentEvent);
+    const result = await window.api.exportAs('excel', getSortedEventForExport());
     if (result.success) alert(`Saved to ${result.filePath}`);
 });
 
@@ -181,7 +172,7 @@ document.getElementById('export-pdf').addEventListener('click', async () => {
     doc.text(currentEvent.name, 14, 20);
 
     // total
-    const total = currentEvent.donations.reduce((sum, d) => sum + d.amount, 0);
+    const total = getSortedEventForExport().donations.reduce((sum, d) => sum + d.amount, 0);
     doc.setFontSize(12);
     doc.text(`Total Collected: KES ${total.toFixed(2)}`, 14, 30);
 
@@ -193,8 +184,8 @@ document.getElementById('export-pdf').addEventListener('click', async () => {
 
     // rows
     let y = 55;
-    currentEvent.donations.forEach(donation => {
-        const donor = currentEvent.donors.find(d => d.id === donation.donorId);
+    getSortedEventForExport().donations.forEach(donation => {
+        const donor = getSortedEventForExport().donors.find(d => d.id === donation.donorId);
         doc.text(donor.name, 14, y);
         doc.text(donation.amount.toFixed(2), 100, y);
         doc.text(donation.timestamp, 140, y);
@@ -210,5 +201,24 @@ document.getElementById('export-pdf').addEventListener('click', async () => {
     });
     if (result.success) alert(`Saved to ${result.filePath}`);
 });
+
+function getSortedEventForExport() {
+    const sortedDonations = getSortedDonations();
+    return { ...currentEvent, donations: sortedDonations };
+}
+
+function getSortedDonations() {
+    if (currentSort === 'name') {
+        return [...currentEvent.donations].sort((a, b) => {
+            const nameA = currentEvent.donors.find(d => d.id === a.donorId).name;
+            const nameB = currentEvent.donors.find(d => d.id === b.donorId).name;
+            return nameA.localeCompare(nameB);
+        });
+    } else if (currentSort === 'amount') {
+        return [...currentEvent.donations].sort((a, b) => b.amount - a.amount);
+    } else {
+        return [...currentEvent.donations].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+}
 
 loadSidebar();

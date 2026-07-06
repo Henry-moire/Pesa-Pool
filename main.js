@@ -46,11 +46,16 @@ function listEvents() {
     const events = fs.readdirSync(dir)
         .filter(file => file.endsWith('.json'))
         .map(filename => {
-            const fullPath = path.join(dir, filename);
-            const content = fs.readFileSync(fullPath, 'utf8');
-            const event = JSON.parse(content);
-            return { id: event.id, name: event.name, date: event.date };
-        });
+            try {
+                const fullPath = path.join(dir, filename);
+                const content = fs.readFileSync(fullPath, 'utf8');
+                const event = JSON.parse(content);
+                return { id: event.id, name: event.name, date: event.date };
+            } catch {
+                return null;
+            }
+        })
+        .filter(event => event !== null);
     return events;
 }
 
@@ -107,8 +112,9 @@ ipcMain.handle('save-event', (_e, eventData) => {
 ipcMain.handle('add-donation', (_e, eventId, donorName, amount) => {
     return addDonation(eventId, donorName, amount);
 });
-ipcMain.handle('export', async (_e, format, eventData) => {
-    const { filePath } = await dialog.showSaveDialog({
+ipcMain.handle('export', async (e, format, eventData) => {
+    const win = BrowserWindow.fromWebContents(e.sender);
+    const { filePath } = await dialog.showSaveDialog(win, {
         defaultPath: `${eventData.name}_export`,
         filters: [{ name: format.toUpperCase(), extensions: [format === 'excel' ? 'xlsx' : format] }]
     });
@@ -146,11 +152,13 @@ ipcMain.handle('export', async (_e, format, eventData) => {
     return { success: true, filePath };
 });
 
-ipcMain.handle('save-buffer', async (_e, { buffer, defaultName, extension }) => {
-    const { filePath } = await dialog.showSaveDialog({
+ipcMain.handle('save-buffer', async (e, { buffer, defaultName, extension }) => {
+    const win = BrowserWindow.fromWebContents(e.sender);
+    const { filePath } = await dialog.showSaveDialog(win, {
         defaultPath: defaultName,
         filters: [{ name: extension.toUpperCase(), extensions: [extension] }]
     });
+    if (win) win.focus();
     if (!filePath) return { success: false };
     fs.writeFileSync(filePath, Buffer.from(buffer));
     return { success: true, filePath };

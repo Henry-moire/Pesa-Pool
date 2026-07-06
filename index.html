@@ -4,10 +4,61 @@
   <title>Pesa Pool</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'">
   <link rel="stylesheet" href="renderer.css">
-  <script src="renderer.js" defer></script>
   <script src="node_modules/jspdf/dist/jspdf.umd.min.js"></script>
+  <script src="renderer.js" defer></script>
 </head>
 <body>
+  <div id="app">
+    <aside id="sidebar">
+      <button id="btn-new-event">+ New Event</button>
+      <ul id="event-list"></ul>
+    </aside>
+
+    <main id="main">
+      <div id="view-empty">
+        <p>Select an event or create a new one.</p>
+      </div>
+      <div id="view-event">
+        <h1 id="event-name"></h1>
+        <p id="event-total"></p>
+        <div id="export-buttons">
+          <button id="export-json">Export JSON</button>
+          <button id="export-csv">Export CSV</button>
+          <button id="export-excel">Export Excel</button>
+          <button id="export-pdf">Export PDF</button>
+        </div>
+        <form id="form-add-donation">
+          <div>
+              <label for="inp-donor">Donor Name</label>
+              <input type="text" id="inp-donor" placeholder="e.g. Jane Wanjiku" />
+          </div>
+          <div>
+              <label for="inp-amount">Amount (KES)</label>
+              <input type="number" id="inp-amount" placeholder="0.00" />
+          </div>
+          <button type="submit">Add Donation</button>
+      </form>
+        <div id="sort-controls">
+          <label for="sort-select">Sort by:</label>
+          <select id="sort-select">
+              <option value="name">Name</option>
+              <option value="amount">Amount</option>
+              <option value="date">Date</option>
+          </select>
+        </div>
+        <table id="donations-table">
+          <thead>
+            <tr>
+              <th>Donor</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="donations-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
   <div id="modal-new-event">
     <div id="modal-content">
       <h2>New Event</h2>
@@ -29,51 +80,6 @@
       <button id="edit-confirm">Save</button>
       <button id="edit-cancel">Cancel</button>
     </div>
-  </div>
-  <div id="app">
-
-    <aside id="sidebar">
-      <button id="btn-new-event">+ New Event</button>
-      <ul id="event-list"></ul>
-    </aside>
-
-    <main id="main">
-      <div id="view-empty">
-        <p>Select an event or create a new one.</p>
-      </div>
-      <div id="view-event">
-        <h1 id="event-name"></h1>
-        <p id="event-total"></p>
-        <div id="export-buttons">
-          <button id="export-json">Export JSON</button>
-          <button id="export-csv">Export CSV</button>
-          <button id="export-excel">Export Excel</button>
-          <button id="export-pdf">Export PDF</button>
-        </div>
-        <form id="form-add-donation">
-          <input type="text" id="inp-donor" placeholder="Donor name" />
-          <input type="number" id="inp-amount" placeholder="Amount (KES)" />
-          <button type="submit">Add Donation</button>
-        </form>
-        <label for="sort-select">Sort by:</label>
-        <select id="sort-select">
-          <option value="name">Name</option>
-          <option value="amount">Amount</option>
-          <option value="date">Date</option>
-        </select>
-        <table id="donations-table">
-          <thead>
-            <tr>
-              <th>Donor</th>
-              <th>Amount</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody id="donations-body"></tbody>
-        </table>
-      </div>
-    </main>
-
   </div>
 </body>
 </html>
