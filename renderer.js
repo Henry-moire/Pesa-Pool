@@ -46,4 +46,16 @@ async function loadSidebar() {
   });
 }
 
+document.getElementById('form-add-donation').addEventListener('submit', async (e) => {
+    e.preventDefault(); // stops the form from reloading the page
+    const donorName = document.getElementById('inp-donor').value;
+    const amount = parseFloat(document.getElementById('inp-amount').value);
+    if (currentEvent && donorName && !isNaN(amount)) {
+        await window.api.addDonation(currentEvent.id, donorName, amount);
+        document.getElementById('form-add-donation').reset();
+        currentEvent = await window.api.loadEvent(currentEvent.id);
+        renderDonations();
+    }
+});
+
 loadSidebar();
