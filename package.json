@@ -21,5 +21,9 @@
   "homepage": "https://github.com/Henry-moire/Pesa-Pool#readme",
   "devDependencies": {
     "electron": "^42.4.1"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "jspdf": "^4.2.1"
   }
 }

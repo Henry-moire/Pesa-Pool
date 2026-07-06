@@ -1,3 +1,11 @@
 #view-event {
   display: none;
 }
+
+#modal-new-event {
+    display: none;
+}
+
+#modal-edit-donation {
+    display: none;
+}

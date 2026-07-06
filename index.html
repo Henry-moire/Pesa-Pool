@@ -5,9 +5,10 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'">
   <link rel="stylesheet" href="renderer.css">
   <script src="renderer.js" defer></script>
+  <script src="node_modules/jspdf/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <div id="modal-new-event" style="display:none">
+  <div id="modal-new-event">
     <div id="modal-content">
       <h2>New Event</h2>
       <label for="modal-event-name">Event Name</label>
@@ -18,7 +19,7 @@
       <button id="modal-cancel">Cancel</button>
     </div>
   </div>
-  <div id="modal-edit-donation" style="display:none">
+  <div id="modal-edit-donation">
     <div id="modal-edit-content">
       <h2>Edit Donation</h2>
       <label for="edit-donor-name">Donor Name</label>

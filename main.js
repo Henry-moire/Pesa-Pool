@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { randomUUID } = require('crypto');
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const ExcelJS = require('exceljs');
 
 function getDataDir() {
     const dir = path.join(app.getPath('documents'), 'Pesa Pool');
@@ -124,9 +125,37 @@ ipcMain.handle('export', async (_e, format, eventData) => {
         lines.push(`,,`);
         lines.push(`Total,${total.toFixed(2)},`);
         fs.writeFileSync(filePath, lines.join('\n'));
+    } else if (format === 'excel') {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Donations');
+        worksheet.columns = [
+            { header: 'Donor Name', key: 'name', width: 30 },
+            { header: 'Amount (KES)', key: 'amount', width: 15 },
+            { header: 'Date', key: 'date', width: 30 },
+        ];
+        eventData.donations.forEach(donation => {
+            const donor = eventData.donors.find(d => d.id === donation.donorId);
+            worksheet.addRow({
+                name: donor.name,
+                amount: donation.amount,
+                date: donation.timestamp
+            });
+        });
+        await workbook.xlsx.writeFile(filePath);
     }
     return { success: true, filePath };
 });
+
+ipcMain.handle('save-buffer', async (_e, { buffer, defaultName, extension }) => {
+    const { filePath } = await dialog.showSaveDialog({
+        defaultPath: defaultName,
+        filters: [{ name: extension.toUpperCase(), extensions: [extension] }]
+    });
+    if (!filePath) return { success: false };
+    fs.writeFileSync(filePath, Buffer.from(buffer));
+    return { success: true, filePath };
+});
+
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => {
     if (process.platform != 'darwin') {

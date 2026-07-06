@@ -167,4 +167,48 @@ document.getElementById('export-csv').addEventListener('click', async () => {
     if (result.success) alert(`Saved to ${result.filePath}`);
 });
 
+document.getElementById('export-excel').addEventListener('click', async () => {
+    const result = await window.api.exportAs('excel', currentEvent);
+    if (result.success) alert(`Saved to ${result.filePath}`);
+});
+
+document.getElementById('export-pdf').addEventListener('click', async () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // title
+    doc.setFontSize(18);
+    doc.text(currentEvent.name, 14, 20);
+
+    // total
+    const total = currentEvent.donations.reduce((sum, d) => sum + d.amount, 0);
+    doc.setFontSize(12);
+    doc.text(`Total Collected: KES ${total.toFixed(2)}`, 14, 30);
+
+    // table header
+    doc.setFontSize(10);
+    doc.text('Donor Name', 14, 45);
+    doc.text('Amount', 100, 45);
+    doc.text('Date', 140, 45);
+
+    // rows
+    let y = 55;
+    currentEvent.donations.forEach(donation => {
+        const donor = currentEvent.donors.find(d => d.id === donation.donorId);
+        doc.text(donor.name, 14, y);
+        doc.text(donation.amount.toFixed(2), 100, y);
+        doc.text(donation.timestamp, 140, y);
+        y += 10;
+    });
+
+    // convert to buffer and send to main to save
+    const buffer = doc.output('arraybuffer');
+    const result = await window.api.saveBuffer({
+        buffer: Array.from(new Uint8Array(buffer)),
+        defaultName: `${currentEvent.name}_export`,
+        extension: 'pdf'
+    });
+    if (result.success) alert(`Saved to ${result.filePath}`);
+});
+
 loadSidebar();
