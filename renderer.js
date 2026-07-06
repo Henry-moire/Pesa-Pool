@@ -31,7 +31,31 @@ function renderDonations() {
         tdTimestamp.textContent = donation.timestamp;
         tr.appendChild(tdTimestamp);
         tbody.appendChild(tr);
+        const tdActions = document.createElement('td');
+        const btnDelete = document.createElement('button');
+        btnDelete.textContent = 'Delete';
+        btnDelete.addEventListener('click', () => deleteDonation(donation.id));
+        tdActions.appendChild(btnDelete);
+        tr.appendChild(tdActions);
     });
+}
+
+async function deleteDonation(donationId) {
+    const donationIndex = currentEvent.donations.findIndex(d => d.id === donationId);
+    if (donationIndex !== -1) {
+        currentEvent.donations.splice(donationIndex, 1);
+        updateTotal();
+        await window.api.saveEvent(currentEvent);
+        renderDonations();
+    }
+}
+
+function updateTotal() {
+    let total = 0;
+    currentEvent.donations.forEach(donation => {
+        total += donation.amount;
+    });
+    document.getElementById('event-total').textContent = total.toFixed(2);
 }
 
 async function selectEvent(id) {
@@ -40,11 +64,7 @@ async function selectEvent(id) {
     eventName.textContent = currentEvent.name;
     document.getElementById('view-empty').style.display = 'none';
     document.getElementById('view-event').style.display = 'block';
-    let eventTotal = 0;
-    currentEvent.donations.forEach(donation => {
-        eventTotal += donation.amount;
-    });
-    document.getElementById('event-total').textContent = eventTotal.toFixed(2);
+    updateTotal();
     renderDonations();
 }
 
