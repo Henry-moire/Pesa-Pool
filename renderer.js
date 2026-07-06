@@ -157,4 +157,14 @@ document.getElementById('edit-confirm').addEventListener('click', async () => {
     }
 });
 
+document.getElementById('export-json').addEventListener('click', async () => {
+    const result = await window.api.exportAs('json', currentEvent);
+    if (result.success) alert(`Saved to ${result.filePath}`);
+});
+
+document.getElementById('export-csv').addEventListener('click', async () => {
+    const result = await window.api.exportAs('csv', currentEvent);
+    if (result.success) alert(`Saved to ${result.filePath}`);
+});
+
 loadSidebar();

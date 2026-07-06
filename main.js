@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { randomUUID } = require('crypto');
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 
 function getDataDir() {
     const dir = path.join(app.getPath('documents'), 'Pesa Pool');
@@ -105,6 +105,27 @@ ipcMain.handle('save-event', (_e, eventData) => {
 });
 ipcMain.handle('add-donation', (_e, eventId, donorName, amount) => {
     return addDonation(eventId, donorName, amount);
+});
+ipcMain.handle('export', async (_e, format, eventData) => {
+    const { filePath } = await dialog.showSaveDialog({
+        defaultPath: `${eventData.name}_export`,
+        filters: [{ name: format.toUpperCase(), extensions: [format === 'excel' ? 'xlsx' : format] }]
+    });
+    if (!filePath) return { success: false };
+    if (format === 'json') {
+        fs.writeFileSync(filePath, JSON.stringify(eventData, null, 2));
+    } else if (format === 'csv') {
+        const lines = ['Donor Name,Amount,Date'];
+        eventData.donations.forEach(donation => {
+            const donor = eventData.donors.find(d => d.id === donation.donorId);
+            lines.push(`${donor.name},${donation.amount.toFixed(2)},${donation.timestamp}`);
+        });
+        const total = eventData.donations.reduce((sum, d) => sum + d.amount, 0);
+        lines.push(`,,`);
+        lines.push(`Total,${total.toFixed(2)},`);
+        fs.writeFileSync(filePath, lines.join('\n'));
+    }
+    return { success: true, filePath };
 });
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => {
