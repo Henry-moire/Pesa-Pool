@@ -91,37 +91,6 @@ function addDonation(eventId, donorName, amount) {
     return event;
 }
 
-function renderDonations(event) {
-    const tbody = document.getElementById('donations-body');
-    tbody.innerHTML = '';
-    eventName.textContent = currentEvent.name;
-    currentEvent.donations.forEach(donation => {
-        const donor = currentEvent.donors.find(d => d.id === donation.donorId);
-        const tr = document.createElement('tr');
-        const tdName = document.createElement('td');
-        tdName.textContent = donor.name;
-        tr.appendChild(tdName);
-        const tdAmount = document.createElement('td');
-        tdAmount.textContent = donation.amount.toFixed(2);
-        tr.appendChild(tdAmount);
-        const tdTimestamp = document.createElement('td');
-        tdTimestamp.textContent = donation.timestamp;
-        tr.appendChild(tdTimestamp);
-        tbody.appendChild(tr);
-    });
-}
-
-function selectEvent(id) {
-    currentEvent = await window.api.loadEvent(id);
-    const eventName = document.getElementById('event-name');
-    document.getElementById('view-event').style.display = 'none';
-    let eventTotal = 0;
-    currentEvent.donations.forEach(donation => {
-        eventTotal += donation.amount;
-    });
-    renderDonations(currentEvent);
-}
-
 ipcMain.handle('create-event', (_e, name, date) => {
     return createEvent(name, date);
 });
