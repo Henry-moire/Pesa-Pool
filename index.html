@@ -7,6 +7,17 @@
   <script src="renderer.js" defer></script>
 </head>
 <body>
+  <div id="modal-new-event" style="display:none">
+    <div id="modal-content">
+      <h2>New Event</h2>
+      <label for="modal-event-name">Event Name</label>
+      <input type="text" id="modal-event-name" placeholder="e.g. Mama's Funeral" />
+      <label for="modal-event-date">Date</label>
+      <input type="date" id="modal-event-date" />
+      <button id="modal-confirm">Create</button>
+      <button id="modal-cancel">Cancel</button>
+    </div>
+  </div>
   <div id="app">
 
     <aside id="sidebar">

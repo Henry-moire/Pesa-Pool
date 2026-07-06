@@ -58,4 +58,23 @@ document.getElementById('form-add-donation').addEventListener('submit', async (e
     }
 });
 
+document.getElementById('btn-new-event').addEventListener('click', () => {
+    document.getElementById('modal-new-event').style.display = 'block';
+});
+
+document.getElementById('modal-cancel').addEventListener('click', () => {
+    document.getElementById('modal-new-event').style.display = 'none';
+});
+
+document.getElementById('modal-confirm').addEventListener('click', async () => {
+    const name = document.getElementById('modal-event-name').value.trim();
+    const date = document.getElementById('modal-event-date').value;
+    if (name && date) {
+        const newEvent = await window.api.createEvent(name, date);
+        document.getElementById('modal-new-event').style.display = 'none';
+        await loadSidebar();
+        selectEvent(newEvent.id);
+    }
+});
+
 loadSidebar();
