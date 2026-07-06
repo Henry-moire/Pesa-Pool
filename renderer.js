@@ -1,5 +1,6 @@
 let currentEvent = null;
 let currentSort = 'name';
+let editingDonationId = null;
 
 function renderDonations() {
     const tbody = document.getElementById('donations-body');
@@ -37,7 +38,20 @@ function renderDonations() {
         btnDelete.addEventListener('click', () => deleteDonation(donation.id));
         tdActions.appendChild(btnDelete);
         tr.appendChild(tdActions);
+        const btnEdit = document.createElement('button');
+        btnEdit.textContent = 'Edit';
+        btnEdit.addEventListener('click', () => openEditModal(donation.id));
+        tdActions.appendChild(btnEdit);
     });
+}
+
+async function openEditModal(donationId) {
+    const donation = currentEvent.donations.find(d => d.id === donationId);
+    const donName = currentEvent.donors.find(d => d.id === donation.donorId).name;
+    editingDonationId = donationId;
+    document.getElementById('edit-donor-name').value = donName;
+    document.getElementById('edit-amount').value = donation.amount;
+    document.getElementById('modal-edit-donation').style.display = 'block';
 }
 
 async function deleteDonation(donationId) {
@@ -115,6 +129,32 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
 document.getElementById('sort-select').addEventListener('change', (e) => {
     currentSort = e.target.value;
     renderDonations();
+});
+
+document.getElementById('edit-cancel').addEventListener('click', () => {
+    document.getElementById('modal-edit-donation').style.display = 'none';
+    editingDonationId = null;
+});
+
+document.getElementById('edit-confirm').addEventListener('click', async () => {
+    const donorName = document.getElementById('edit-donor-name').value.trim();
+    const amount = parseFloat(document.getElementById('edit-amount').value);
+    if (currentEvent && editingDonationId && donorName && !isNaN(amount)) {
+        document.getElementById('modal-edit-donation').style.display = 'none';
+        const donation = currentEvent.donations.find(d => d.id === editingDonationId);
+        const existingDonor = currentEvent.donors.find(d => d.name.toLowerCase() === donorName.toLowerCase());
+        if (existingDonor) {
+            donation.donorId = existingDonor.id;
+        } else {
+            const currentDonor = currentEvent.donors.find(d => d.id === donation.donorId);
+            currentDonor.name = donorName;
+        }
+        donation.amount = amount;
+        updateTotal();
+        await window.api.saveEvent(currentEvent);
+        renderDonations();
+        editingDonationId = null;
+    }
 });
 
 loadSidebar();
