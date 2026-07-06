@@ -1,9 +1,24 @@
 let currentEvent = null;
+let currentSort = 'name';
 
 function renderDonations() {
     const tbody = document.getElementById('donations-body');
     tbody.innerHTML = '';
-    currentEvent.donations.forEach(donation => {
+    let sorted;
+
+    if (currentSort === "name") {
+      sorted = [...currentEvent.donations].sort((a, b) => {
+        const nameA = currentEvent.donors.find(d => d.id === a.donorId).name;
+        const nameB = currentEvent.donors.find(d => d.id === b.donorId).name;
+        return nameA.localeCompare(nameB);
+      });
+    } else if (currentSort === 'amount') {
+      sorted = [...currentEvent.donations].sort((a, b) => b.amount - a.amount);
+    } else {
+      sorted = [...currentEvent.donations].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+
+    sorted.forEach(donation => {
         const donor = currentEvent.donors.find(d => d.id === donation.donorId);
         const tr = document.createElement('tr');
         const tdName = document.createElement('td');
@@ -75,6 +90,11 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
         await loadSidebar();
         selectEvent(newEvent.id);
     }
+});
+
+document.getElementById('sort-select').addEventListener('change', (e) => {
+    currentSort = e.target.value;
+    renderDonations();
 });
 
 loadSidebar();
