@@ -1,6 +1,6 @@
 # Pesa Pool
 
-A desktop application for tracking family contributions at life events such as funerals, weddings, and medical emergencies. Built for simplicity and ease of use, with older users in mind.
+A desktop application for tracking family contributions at life events such as funerals, weddings, and medical emergencies. Built for simplicity and ease of use.
 
 ---
 
