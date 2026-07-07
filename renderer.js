@@ -17,7 +17,13 @@ function renderDonations() {
         tdAmount.textContent = donation.amount.toFixed(2);
         tr.appendChild(tdAmount);
         const tdTimestamp = document.createElement('td');
-        tdTimestamp.textContent = donation.timestamp;
+        tdTimestamp.textContent = new Date(donation.timestamp).toLocaleString('en-KE', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
         tr.appendChild(tdTimestamp);
         const tdActions = document.createElement('td');
         const btnDelete = document.createElement('button');

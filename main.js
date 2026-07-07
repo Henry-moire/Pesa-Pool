@@ -124,7 +124,14 @@ ipcMain.handle('export', async (e, format, eventData) => {
         const lines = ['Donor Name,Amount,Date'];
         eventData.donations.forEach(donation => {
             const donor = eventData.donors.find(d => d.id === donation.donorId);
-            lines.push(`${donor.name},${donation.amount.toFixed(2)},${donation.timestamp}`);
+            const formattedDate = new Date(donation.timestamp).toLocaleString('en-KE', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            lines.push(`${donor.name},${donation.amount.toFixed(2)},"${formattedDate}"`);
         });
         const total = eventData.donations.reduce((sum, d) => sum + d.amount, 0);
         lines.push(`,,`);
@@ -143,7 +150,13 @@ ipcMain.handle('export', async (e, format, eventData) => {
             worksheet.addRow({
                 name: donor.name,
                 amount: donation.amount,
-                date: donation.timestamp
+                date: new Date(donation.timestamp).toLocaleString('en-KE', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
             });
         });
         await workbook.xlsx.writeFile(filePath);
