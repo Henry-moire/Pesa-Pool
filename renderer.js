@@ -82,6 +82,38 @@ function showConfirm(message, onConfirm) {
     };
 }
 
+function resolveDonor(donorName) {
+    return new Promise((resolve) => {
+        const existing = currentEvent.donors.find(
+            d => d.name.toLowerCase() === donorName.toLowerCase()
+        );
+
+        if (!existing) {
+            // no match — create new donor
+            resolve({ id: 'don_' + window.crypto.randomUUID(), name: donorName });
+            return;
+        }
+
+        // match found — ask user
+        document.getElementById('modal-disambiguate-message').textContent =
+            `There is already a donor named "${existing.name}". Is this the same person?`;
+        document.getElementById('modal-disambiguate').style.display = 'flex';
+
+        document.getElementById('modal-disambiguate-yes').onclick = () => {
+            document.getElementById('modal-disambiguate').style.display = 'none';
+            resolve(existing); // reuse existing donor
+        };
+        document.getElementById('modal-disambiguate-no').onclick = () => {
+            document.getElementById('modal-disambiguate').style.display = 'none';
+            resolve({ id: 'don_' + window.crypto.randomUUID(), name: donorName }); // new donor
+        };
+        document.getElementById('modal-disambiguate-cancel').onclick = () => {
+            document.getElementById('modal-disambiguate').style.display = 'none';
+            resolve(null); // cancelled
+        };
+    });
+}
+
 function updateTotal() {
     let total = 0;
     currentEvent.donations.forEach(donation => {
@@ -124,15 +156,16 @@ async function loadSidebar() {
 }
 
 document.getElementById('form-add-donation').addEventListener('submit', async (e) => {
-    e.preventDefault(); // stops the form from reloading the page
-    const donorName = document.getElementById('inp-donor').value;
+    e.preventDefault();
+    const donorName = document.getElementById('inp-donor').value.trim();
     const amount = parseFloat(document.getElementById('inp-amount').value);
     if (currentEvent && donorName && !isNaN(amount)) {
-        await window.api.addDonation(currentEvent.id, donorName, amount);
-        document.getElementById('form-add-donation').reset();
-        currentEvent = await window.api.loadEvent(currentEvent.id);
+        const donor = await resolveDonor(donorName);
+        if (!donor) return; // user cancelled
+        currentEvent = await window.api.addDonation(currentEvent.id, donor.id, donor.name, amount);
         updateTotal();
         renderDonations();
+        document.getElementById('form-add-donation').reset();
     }
 });
 

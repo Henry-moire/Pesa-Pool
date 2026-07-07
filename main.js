@@ -76,19 +76,18 @@ function saveEvent(event) {
     fs.writeFileSync(filePath, JSON.stringify(event, null, 2));
 }
 
-function addDonation(eventId, donorName, amount) {
+function addDonation(eventId, donorId, donorName, amount) {
     const event = loadEvent(eventId);
-    let donor = event.donors.find(donor => donor.name.toLowerCase() === donorName.toLowerCase());
-    if (!donor) {
-        donor = {
-            id: 'don_' + randomUUID(),
-            name: donorName
-        };
-        event.donors.push(donor);
+    
+    // add donor if they don't exist yet
+    const existingDonor = event.donors.find(d => d.id === donorId);
+    if (!existingDonor) {
+        event.donors.push({ id: donorId, name: donorName });
     }
+
     const donation = {
         id: 'd_' + randomUUID(),
-        donorId: donor.id,
+        donorId: donorId,
         amount: amount,
         timestamp: new Date().toISOString()
     };
@@ -109,8 +108,8 @@ ipcMain.handle('load-event', (_e, id) => {
 ipcMain.handle('save-event', (_e, eventData) => {
     return saveEvent(eventData);
 });
-ipcMain.handle('add-donation', (_e, eventId, donorName, amount) => {
-    return addDonation(eventId, donorName, amount);
+ipcMain.handle('add-donation', (_e, eventId, donorId, donorName, amount) => {
+    return addDonation(eventId, donorId, donorName, amount);
 });
 ipcMain.handle('export', async (e, format, eventData) => {
     const win = BrowserWindow.fromWebContents(e.sender);
