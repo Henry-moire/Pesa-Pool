@@ -25,6 +25,10 @@ html, body {
     flex: 1;
     height: 100%;
     overflow-y: auto;
+    padding: 32px;
+    background-color: #e8f5e9;
+    background-image: url('pattern.svg');
+    background-size: 60px 60px;
 }
 
 #view-event,
@@ -507,3 +511,11 @@ body {
 #modal-disambiguate-cancel:hover {
     background-color: #f0f0f0;
 }
+
+#donations-table td:last-child,
+#donations-table th:last-child {
+    width: 160px;
+    text-align: right;
+    white-space: nowrap;
+}
+

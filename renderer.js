@@ -30,13 +30,13 @@ function renderDonations() {
         btnDelete.className = 'btn-delete';
         btnDelete.textContent = 'Delete';
         btnDelete.addEventListener('click', () => deleteDonation(donation.id));
-        tdActions.appendChild(btnDelete);
         tr.appendChild(tdActions);
         const btnEdit = document.createElement('button');
         btnEdit.className = 'btn-edit';
         btnEdit.textContent = 'Edit';
         btnEdit.addEventListener('click', () => openEditModal(donation.id));
         tdActions.appendChild(btnEdit);
+        tdActions.appendChild(btnDelete);
         tbody.appendChild(tr);
     });
 }
