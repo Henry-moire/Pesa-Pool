@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "build": "electron-builder --win",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,10 +21,23 @@
   },
   "homepage": "https://github.com/Henry-moire/Pesa-Pool#readme",
   "devDependencies": {
-    "electron": "^42.4.1"
+    "electron": "^42.4.1",
+    "electron-builder": "^26.15.3"
   },
   "dependencies": {
     "exceljs": "^4.4.0",
     "jspdf": "^4.2.1"
-  }
+  },
+  "build": {
+    "appId": "com.pesapool.app",
+    "productName": "Pesa Pool",
+    "win": {
+        "target": "nsis",
+        "icon": "assets/icon.ico"
+    },
+    "nsis": {
+        "oneClick": false,
+        "allowToChangeInstallationDirectory": true
+    }
+}
 }
