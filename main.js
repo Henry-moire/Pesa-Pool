@@ -164,6 +164,15 @@ ipcMain.handle('save-buffer', async (e, { buffer, defaultName, extension }) => {
     return { success: true, filePath };
 });
 
+ipcMain.handle('delete-event', (_e, id) => {
+    const filePath = path.join(getDataDir(), `${id}.json`);
+    if (!fs.existsSync(filePath)) {
+        throw new Error(`Event file not found: ${id}`);
+    }
+    fs.unlinkSync(filePath);
+    return { success: true };
+});
+
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => {
     if (process.platform != 'darwin') {

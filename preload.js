@@ -9,4 +9,5 @@ contextBridge.exposeInMainWorld('api', {
     addDonation: (eventId, donorName, amount) => ipcRenderer.invoke('add-donation', eventId, donorName, amount),
     exportAs: (format, eventData) => ipcRenderer.invoke('export', format, eventData),
     saveBuffer: (payload) => ipcRenderer.invoke('save-buffer', payload),
+    deleteEvent: (id) => ipcRenderer.invoke('delete-event', id),
 });

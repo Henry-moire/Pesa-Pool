@@ -45,13 +45,41 @@ async function openEditModal(donationId) {
 }
 
 async function deleteDonation(donationId) {
-    const donationIndex = currentEvent.donations.findIndex(d => d.id === donationId);
-    if (donationIndex !== -1) {
-        currentEvent.donations.splice(donationIndex, 1);
-        updateTotal();
-        await window.api.saveEvent(currentEvent);
-        renderDonations();
-    }
+    showConfirm('Are you sure you want to delete this donation? This cannot be undone.', async () => {
+        const donationIndex = currentEvent.donations.findIndex(d => d.id === donationId);
+        if (donationIndex !== -1) {
+            currentEvent.donations.splice(donationIndex, 1);
+            updateTotal();
+            await window.api.saveEvent(currentEvent);
+            renderDonations();
+        }
+    });
+}
+
+async function deleteEvent(id) {
+    console.log('deleteEvent called with id:', id);
+    showConfirm('Are you sure you want to delete this event? This cannot be undone.', async () => {
+        await window.api.deleteEvent(id);
+        if (currentEvent && currentEvent.id === id) {
+            currentEvent = null;
+            document.getElementById('view-event').style.display = 'none';
+            document.getElementById('view-empty').style.display = 'block';
+        }
+        await loadSidebar();
+    });
+}
+
+function showConfirm(message, onConfirm) {
+    console.log('showConfirm called');
+    document.getElementById('modal-confirm-message').textContent = message;
+    document.getElementById('modal-confirm').style.display = 'flex';
+    document.getElementById('modal-confirm-ok').onclick = () => {
+        document.getElementById('modal-confirm').style.display = 'none';
+        onConfirm();
+    };
+    document.getElementById('modal-confirm-cancel').onclick = () => {
+        document.getElementById('modal-confirm').style.display = 'none';
+    };
 }
 
 function updateTotal() {
@@ -73,16 +101,26 @@ async function selectEvent(id) {
 }
 
 async function loadSidebar() {
-  const events = await window.api.listEvents();
-  const list = document.getElementById('event-list');
-  list.innerHTML = '';
-  events.forEach(event => {
-    const li = document.createElement('li');
-    li.textContent = event.name;
-    li.dataset.id = event.id;
-    li.addEventListener('click', () => selectEvent(event.id));
-    list.appendChild(li); 
-  });
+    const events = await window.api.listEvents();
+    const list = document.getElementById('event-list');
+    list.innerHTML = '';
+    events.forEach(event => {
+        const li = document.createElement('li');
+        li.textContent = event.name;
+        li.dataset.id = event.id;
+        li.addEventListener('click', () => selectEvent(event.id));
+
+        const btnDelete = document.createElement('button');
+        btnDelete.textContent = 'X';
+        btnDelete.className = 'btn-delete-event';
+        btnDelete.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteEvent(event.id);
+        });
+
+        li.appendChild(btnDelete);
+        list.appendChild(li);
+    });
 }
 
 document.getElementById('form-add-donation').addEventListener('submit', async (e) => {
@@ -106,7 +144,7 @@ document.getElementById('modal-cancel').addEventListener('click', () => {
     document.getElementById('modal-new-event').style.display = 'none';
 });
 
-document.getElementById('modal-confirm').addEventListener('click', async () => {
+document.getElementById('modal-event-confirm').addEventListener('click', async () => {
     const name = document.getElementById('modal-event-name').value.trim();
     const date = document.getElementById('modal-event-date').value;
     if (name && date) {
